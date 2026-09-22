@@ -2,16 +2,28 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/todos'
+  baseURL: 'http://localhost:3000/api/todos',
 });
 
-export const fetchTodos = () => api.get('/').then(res => res.data);
+export const fetchTodos = (filter = 'all') => {
+  const params = {};
+
+  if (filter === 'done') {
+    params.done = true;
+  } else if (filter === 'active') {
+    params.done = false;
+  }
+
+  return api
+    .get('/', { params })
+    .then((res) => res.data);
+};
 
 export const createTodo = (title) =>
-  api.post('/', { title }).then(res => res.data);
+  api.post('/', { title }).then((res) => res.data);
 
 export const updateTodo = (id, updates) =>
-  api.put(`/${id}`, updates).then(res => res.data);
+  api.put(`/${id}`, updates).then((res) => res.data);
 
 export const deleteTodo = (id) =>
-  api.delete(`/${id}`).then(res => res.data);
+  api.delete(`/${id}`).then((res) => res.data);
