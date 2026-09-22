@@ -2,12 +2,28 @@ const Todo = require('../models/Todo');
 
 const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find().sort({ createdAt: -1 });
-    res.json(todos);
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+    const filter = {};
+
+    // Only add the done filter if the query parameter exists
+    if (req.query.done !== undefined) {
+      filter.done = req.query.done === 'true';
+    }
+
+    const todos = await Todo.find(filter).sort({ createdAt: -1 });
+
+    res.status(200).json(todos);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch todos',
+      error: error.message,
+    });
   }
 };
+
+module.exports = {
+  getTodos,
+};
+
 
 const createTodo = async (req, res) => {
   if (!req.body.title) return res.status(400).json({ error: 'Title is required' });
